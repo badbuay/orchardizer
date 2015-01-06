@@ -9,7 +9,7 @@ namespace <#= Module #>.Settings
     public class <#= PartName #>Settings
     {
 <# foreach(var setting in Settings) { #>
-		public <#= setting.Value #> <#= setting.Key #> { get; set; }
+        public <#= setting.Value #> <#= setting.Key #> { get; set; }
 <# } #>
-	}
+    }
 }

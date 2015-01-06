@@ -32,9 +32,9 @@ namespace <#= Module #>.Settings
 
             if (updateModel.TryUpdateModel(settings, "<#= PartName #>Settings", null, null)) {
 <# foreach(var setting in Settings) { #>
-				builder.WithSetting("<#= PartName #>Settings.<#= setting.Key #>", settings.<#= setting.Key #>.ToString(CultureInfo.InvariantCulture));
+                builder.WithSetting("<#= PartName #>Settings.<#= setting.Key #>", settings.<#= setting.Key #>.ToString(CultureInfo.InvariantCulture));
 <# } #>
-			}
+            }
 
             yield return DefinitionTemplate(settings);
         }
