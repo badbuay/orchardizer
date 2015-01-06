@@ -1,9 +1,9 @@
 ﻿Name: $name$
 AntiForgery: enabled
-Author: Orchardizer
-Website: http://orchardproject.net
+Author: Jorge Castillo Pino
+Website: http://latintop.com
 Version: 1.0
-OrchardVersion: 1.0
+OrchardVersion: 1.8
 Description: Description for the module
 Features:
     $name$:
