@@ -329,15 +329,19 @@ namespace Orchardizer
             var solution = GetGlobalService(typeof(SVsSolution)) as IVsSolution;
             var path = GetOrchardExe(solution);
             // check it exists
-            // if not, build solution and run again
+            // if not, todo: build solution and run again
             if (!File.Exists(path))
             {
                 FireError("Cannot find Orchard.exe, try building the solution and trying again");
                 return;
             }
 
-            ProcessStartInfo start = new ProcessStartInfo { FileName = path };
-            Process.Start(start);
+            var startInfo = new ProcessStartInfo
+            {
+                FileName = "\"" + path + "\""
+            };
+
+            Process.Start(startInfo).Exited += new EventHandler(process_Exited);
         }
 
         /// <summary>
@@ -352,28 +356,54 @@ namespace Orchardizer
             {
                 // cancel execution
             }
-            FireError(vs);
+            //FireError(vs);
 
 
             var solution = GetGlobalService(typeof(SVsSolution)) as IVsSolution;
             string solDir, solFile, userOpts;
             solution.GetSolutionInfo(out solDir, out solFile, out userOpts);
 
+
+
+
             var process = new Process();
             var startInfo = new ProcessStartInfo
             {
                 WorkingDirectory = solDir,
                 WindowStyle = ProcessWindowStyle.Normal,
+                //CreateNoWindow = true,
                 FileName = "cmd.exe",
                 RedirectStandardInput = true,
+                //RedirectStandardOutput = true,
+                //RedirectStandardOutput = true,
                 UseShellExecute = false,
                 Arguments = String.Format(@"%comspec% /k ""{0}"" x86", vs)
             };
 
             process.StartInfo = startInfo;
+            process.EnableRaisingEvents = true;
+            process.Exited += new EventHandler(process_Exited);
+
             process.Start();
             process.StandardInput.WriteLine("cd..");
-            process.StandardInput.WriteLine("build precompiled");
+            process.StandardInput.WriteLine("build precompiled /k");
+            //process.WaitForExit();
+        }
+
+        private void process_Exited(object sender, EventArgs e)
+        {
+            var p = (Process)sender;
+            int exitCode = p.ExitCode;
+        }
+
+        /// <summary>
+        /// Generates the content type migration from Orchard export code.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void GenerateContentTypeMigration(object sender, EventArgs e)
+        {
+            
         }
 
         /// <summary>
@@ -724,7 +754,7 @@ namespace Orchardizer
             ep.Delete(end);
 
             var returnVal = update + 1;
-            ep.Insert(updateMethod + Environment.NewLine + Environment.NewLine + "return " + returnVal);
+            ep.Insert(updateMethod + Environment.NewLine + Environment.NewLine + "return " + returnVal + ";");
 
             tp.CreateEditPoint().SmartFormat(ep);
         }
@@ -1016,7 +1046,7 @@ namespace Orchardizer
                 new KeyValuePair<string, string>("$ThemeName$", vm.ThemeName),
                 new KeyValuePair<string, string>("$Author$", vm.Author ?? "Orchardizer"),
                 new KeyValuePair<string, string>("$Description$", vm.Description ?? "Theme created by Orchardizer"),
-                new KeyValuePair<string, string>("$BasedOn$", String.IsNullOrWhiteSpace(vm.BasedOn) ? "" : "BasedOn: " + vm.BasedOn)
+                new KeyValuePair<string, string>("$BasedOn$", String.IsNullOrWhiteSpace(vm.BasedOn) ? "" : "BaseTheme: " + vm.BasedOn)
             });
         }
 
