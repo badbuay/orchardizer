@@ -19,7 +19,7 @@ namespace Codefixes.Helpers
             {
 
                 //TODO: check it doesn't contain expression already
-                newCtor.AddBodyStatements(CreateCtorBody())
+                newCtor.AddBodyStatements(CreateCtorBody(pair.Key, pair.Key));
             }
 
             return ctor;
